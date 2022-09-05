@@ -1,13 +1,27 @@
 import bot from './botInit.js';
 
 function commands() {
-	const commandsList = [
+	const commandsInfo = [
 		{
 			command: '/start',
+			description: 'Почати',
 			text: `Вітаю в Telegram BOT ГУ ДСНС України у Полтавській області ${'\u{1F1FA}\u{1F1E6}'}`,
+			opts: {
+				parse_mode: 'Markdown',
+				disable_web_page_preview: true,
+				reply_markup: JSON.stringify({
+					keyboard: [
+						['Меню 1', 'Меню 2', 'Меню 3'],
+						['Меню 4', 'Меню 5', 'Меню 6'],
+					],
+					resize_keyboard: true,
+					one_time_keyboard: true,
+				}),
+			},
 		},
 		{
 			command: '/contacts',
+			description: 'Контакти Головного управління',
 			text: `
 *Контакти:*
 
@@ -16,9 +30,14 @@ function commands() {
 Телефон: +380532564602
 
 [Official site](https://dsns.gov.ua) / [facebook](https://www.facebook.com/DSNSPOLTAVA) / [YouTube](https://www.youtube.com/channel/UCwU1Gvq7fhSXkNH2lgiRF1Q) / [Instagram](https://www.instagram.com/dsns_poltavska_oblast) / [WhatsApp](https://wa.me/380676785917)`,
+			opts: {
+				parse_mode: 'Markdown',
+				disable_web_page_preview: true,
+			},
 		},
 		{
 			command: '/links',
+			description: 'Корисні посилання',
 			text: `
 *Корисні посилання:*
 
@@ -30,19 +49,32 @@ function commands() {
 
 Повітряна тривога: [${'\u{1F916}'} Android](https://play.google.com/store/apps/details?id=com.ukrainealarm) / [${'\u{1F4F1}'} IOS](https://apps.apple.com/ua/app/%D0%BF%D0%BE%D0%B2%D1%96%D1%82%D1%80%D1%8F%D0%BD%D0%B0-%D1%82%D1%80%D0%B8%D0%B2%D0%BE%D0%B3%D0%B0/id1611955391)
 			`,
+			opts: {
+				parse_mode: 'Markdown',
+				disable_web_page_preview: true,
+			},
 		},
 	];
 
+	const commandsList = commandsInfo.reduce((start, current) => {
+		start.push({
+			command: current.command,
+			description: current.description,
+		});
+		return start;
+	}, []);
+
+	/** SET COMMANDS */
+	bot.setMyCommands(commandsList);
+
+	/** LISTENER COMMANDS */
 	bot.on('message', msg => {
-		commandsList.forEach(item => {
+		commandsInfo.forEach(async item => {
 			const text = item.text,
 				chatId = msg.chat.id;
 
 			if (msg.text == item.command) {
-				bot.sendMessage(chatId, text, {
-					parse_mode: 'Markdown',
-					disable_web_page_preview: true,
-				});
+				await bot.sendMessage(chatId, text, item.opts);
 			}
 		});
 	});
