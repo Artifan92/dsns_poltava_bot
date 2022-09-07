@@ -1,10 +1,12 @@
 import bot from './botInit.js';
+import path from './path.js';
 
 function keyboard() {
 	const mainKeyboard = [
 		{
 			btn: `Про Головне управління${'\u{1F1FA}\u{1F1E6}'}`,
 			text: `Про Головне управління меню`,
+			id: 'main',
 			opts: {
 				parse_mode: 'Markdown',
 				disable_web_page_preview: true,
@@ -84,6 +86,9 @@ function keyboard() {
 
 			if (msg.text == item.btn) {
 				await bot.sendMessage(chatId, text, opts);
+				path[item.id] = msg.message_id;
+				console.log(msg);
+				console.log(path);
 			}
 		});
 	}
