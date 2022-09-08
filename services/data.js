@@ -148,7 +148,7 @@ const commands = [
 	},
 ];
 
-const callBack = [
+const callback = [
 	{
 		callback_data: 'leadership',
 		reply_markup: JSON.stringify({
@@ -176,4 +176,4 @@ const callBack = [
 	},
 ];
 
-export { commands, keyboard, callBack };
+export { commands, keyboard, callback };
