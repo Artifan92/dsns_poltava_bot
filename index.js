@@ -16,6 +16,11 @@ setCommandsBot.render();
 const setKeyboard = new Keyboard(keyboard, bot);
 setKeyboard.render();
 
-/** INLINE KEYBOARD */
-const initcallback = new Callback(callback, bot);
+/** CALLBACK */
+const initcallback = new Callback(callback, bot, {
+	options: {
+		parseMode: 'Markdown',
+		disableWebPagePreview: true,
+	},
+});
 initcallback.render();

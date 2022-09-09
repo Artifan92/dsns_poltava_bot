@@ -150,29 +150,24 @@ const commands = [
 
 const callback = [
 	{
-		callback_data: 'leadership',
-		reply_markup: JSON.stringify({
+		callbackData: 'leadership',
+		answerText: 'answerText',
+		replyMarkup: JSON.stringify({
 			inline_keyboard: [
 				[
 					{
 						text: `Керівництво!!!${'\u{1F468}\u{200D}\u{1F692}'}`,
-						callback_data: 'leadership',
+						callback_data: 'leadersh',
 					},
 				],
 				[
 					{
 						text: `Структура!!!${'\u{1F692}'}`,
-						callback_data: 'structure',
+						callback_data: 'structu',
 					},
 				],
 			],
 		}),
-		opts: {
-			parse_mode: 'Markdown',
-			disable_web_page_preview: true,
-			chat_id: 252263254,
-			message_id: 380,
-		},
 	},
 ];
 
