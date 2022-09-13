@@ -14,10 +14,10 @@
 	"author": "Artem Balandin",
 	"license": "ISC",
 	"devDependencies": {
-		"node-telegram-bot-api": "^0.59.0",
 		"nodemon": "^2.0.19"
 	},
 	"dependencies": {
-		"config": "^3.3.8"
+		"config": "^3.3.8",
+		"node-telegram-bot-api": "^0.59.0"
 	}
 }
