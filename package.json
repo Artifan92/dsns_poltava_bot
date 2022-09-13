@@ -14,8 +14,6 @@
 	"author": "Artem Balandin",
 	"license": "ISC",
 	"devDependencies": {
-		"@babel/cli": "^7.18.10",
-		"@babel/preset-env": "^7.19.0",
 		"nodemon": "^2.0.19"
 	},
 	"dependencies": {
