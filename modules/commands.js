@@ -1,3 +1,5 @@
+import { users } from '../services/data.js';
+
 class Commands {
 	constructor(commandList, bot) {
 		this.commandList = commandList;
@@ -24,6 +26,18 @@ class Commands {
 
 			if (msgText == command) {
 				await this.bot.sendMessage(msgChatId, text, opts);
+				if (msgText == '/start' && users.every(item => msgChatId != item.id)) {
+					users.push({
+						id: msg.from.id,
+						is_bot: msg.from.is_bot,
+						first_name: msg.from.first_name,
+						last_name: msg.from.last_name,
+						username: msg.from.username,
+						language_code: msg.from.language_code,
+						is_premium: msg.from.is_premium,
+					});
+					console.log(users);
+				}
 			}
 		});
 	}
