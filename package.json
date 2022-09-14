@@ -1,13 +1,9 @@
 {
 	"name": "dsns_poltava_bot",
 	"version": "1.0.0",
-	"engines": {
-		"node": "18.9.0",
-		"npm": "8.19.1"
-	},
+	"type": "module",
 	"description": "Telegram Bot for DSNS Poltava",
 	"main": "index.js",
-	"type": "module",
 	"scripts": {
 		"dev": "nodemon index.js",
 		"start": "node index.js"
