@@ -1,9 +1,11 @@
 import TelegramApi from 'node-telegram-bot-api';
-import { token } from './services/secret.js';
+import config from 'config';
 import { commands, keyboard, callback } from './services/data.js';
 import Commands from './modules/Commands.js';
 import Keyboard from './modules/Keyboard.js';
 import Callback from './modules/Callback.js';
+
+const token = config.get('token');
 
 /** BOT INIT */
 const bot = new TelegramApi(token, { polling: true });
@@ -16,6 +18,11 @@ setCommandsBot.render();
 const setKeyboard = new Keyboard(keyboard, bot);
 setKeyboard.render();
 
-/** INLINE KEYBOARD */
-const initcallback = new Callback(callback, bot);
+/** CALLBACK */
+const initcallback = new Callback(callback, bot, {
+	options: {
+		parseMode: 'Markdown',
+		disableWebPagePreview: true,
+	},
+});
 initcallback.render();
