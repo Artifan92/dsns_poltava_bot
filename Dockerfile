@@ -1,4 +1,7 @@
 FROM node:18.9.0
+
+RUN mkdir -p /usr/src/app
+
 WORKDIR /usr/src/app
 
 # установка зависимостей
@@ -10,7 +13,7 @@ RUN npm install
 # Если вы создаете сборку для продакшн
 # RUN npm ci --only=production
 
-COPY . .
+COPY . /usr/src/app
 
 EXPOSE 8080
 
