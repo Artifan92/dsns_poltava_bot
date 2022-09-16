@@ -1,11 +1,12 @@
 import TelegramApi from 'node-telegram-bot-api';
-import config from 'config';
+import * as dotenv from 'dotenv';
 import { commands, keyboard, callback } from './services/data.js';
 import Commands from './modules/Commands.js';
 import Keyboard from './modules/Keyboard.js';
 import Callback from './modules/Callback.js';
 
-const token = config.get('token');
+dotenv.config();
+const token = process.env.TOKEN;
 
 /** BOT INIT */
 const bot = new TelegramApi(token, { polling: true });
