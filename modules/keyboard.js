@@ -10,8 +10,7 @@ class Keyboard {
 				opts = item.opts,
 				btn = item.btn,
 				msgText = msg.text,
-				msgChatId = msg.chat.id,
-				msgId = msg.message_id;
+				msgChatId = msg.chat.id;
 			if (msgText == btn) {
 				await this.bot.sendMessage(msgChatId, text, opts);
 			}
