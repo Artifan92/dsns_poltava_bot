@@ -3,3 +3,4 @@ services:
   bot:
     build: .
     image: artifan/dsns-poltava-bot:latest
+    restart: always
