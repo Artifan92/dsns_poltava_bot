@@ -17,4 +17,5 @@ COPY . /usr/src/app
 
 EXPOSE 8080
 
-CMD [ "npm", "start" ]
+HEALTHCHECK --timeout=30s --retries=3 \
+	CMD ["npm", "start" ]
