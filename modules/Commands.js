@@ -1,4 +1,4 @@
-import { users } from '../services/data.js';
+import User from '../data/user.js';
 
 class Commands {
 	constructor(commandList, bot) {
@@ -18,25 +18,36 @@ class Commands {
 
 	listenerComands(msg) {
 		this.commandList.forEach(async item => {
-			const text = item.text,
-				opts = item.opts,
-				command = item.command,
+			const { text, opts, command } = item,
+				{
+					id,
+					is_bot,
+					first_name,
+					last_name,
+					username,
+					language_code,
+					is_premium,
+				} = msg.from,
 				msgText = msg.text,
 				msgChatId = msg.chat.id;
 
 			if (msgText == command) {
 				await this.bot.sendMessage(msgChatId, text, opts);
-				if (msgText == '/start' && users.every(item => msgChatId != item.id)) {
-					users.push({
-						id: msg.from.id,
-						is_bot: msg.from.is_bot,
-						first_name: msg.from.first_name,
-						last_name: msg.from.last_name,
-						username: msg.from.username,
-						language_code: msg.from.language_code,
-						is_premium: msg.from.is_premium,
+				const ollUsers = await User.find();
+				if (
+					msgText == '/start' &&
+					ollUsers.every(user => msgChatId != user.id)
+				) {
+					const addNewUser = new User({
+						id,
+						is_bot,
+						first_name,
+						last_name,
+						username,
+						language_code,
+						is_premium,
 					});
-					console.log(users);
+					await addNewUser.save();
 				}
 			}
 		});
