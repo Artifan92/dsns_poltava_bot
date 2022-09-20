@@ -6,9 +6,7 @@ class Keyboard {
 
 	answerMainMenu(msg) {
 		this.keyboardList.forEach(async item => {
-			const text = item.text,
-				opts = item.opts,
-				btn = item.btn,
+			const { text, opts, btn } = item,
 				msgText = msg.text,
 				msgChatId = msg.chat.id;
 			if (msgText == btn) {

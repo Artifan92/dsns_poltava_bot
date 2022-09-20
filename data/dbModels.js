@@ -19,25 +19,38 @@ async function connectToDb() {
 connectToDb().catch(err => console.log(err));
 
 const UserSchema = new mongoose.Schema({
-	id: {
-		type: Number,
-		require: true,
-	},
-	is_bot: Boolean,
-	first_name: String,
-	last_name: String,
-	username: String,
-	language_code: String,
-	is_premium: Boolean,
-});
+		id: {
+			type: Number,
+			require: true,
+		},
+		is_bot: Boolean,
+		first_name: String,
+		last_name: String,
+		username: String,
+		language_code: String,
+		is_premium: Boolean,
+	}),
+	CommandSchema = new mongoose.Schema({
+		command: String,
+		description: String,
+		text: String,
+		opts: Object,
+	}),
+	KeyboardSchema = new mongoose.Schema({
+		btn: String,
+		text: String,
+		id: String,
+		opts: Object,
+	}),
+	CallbackSchema = new mongoose.Schema({
+		callbackData: String,
+		answerText: String,
+		replyMarkup: String,
+	});
 
-// UserSchema.methods.speak = function speak() {
-// 	const greeting = this.name
-// 		? 'Meow name is ' + this.name
-// 		: "I don't have a name";
-// 	console.log(greeting);
-// };
+const User = mongoose.model('user', UserSchema),
+	CommandModel = mongoose.model('command', CommandSchema),
+	KeyboardModel = mongoose.model('keyboard', KeyboardSchema),
+	CallbackModel = mongoose.model('callback', CallbackSchema);
 
-const User = mongoose.model('user', UserSchema);
-
-export { User };
+export { User, CommandModel, KeyboardModel, CallbackModel };

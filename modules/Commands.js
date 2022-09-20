@@ -1,9 +1,8 @@
-import { User } from '../data/dbModels.js';
-
 class Commands {
-	constructor(commandList, bot) {
+	constructor(commandList, bot, User) {
 		this.commandList = commandList;
 		this.bot = bot;
+		this.User = User;
 	}
 
 	setCommandsList() {
@@ -33,12 +32,12 @@ class Commands {
 
 			if (msgText == command) {
 				await this.bot.sendMessage(msgChatId, text, opts);
-				const ollUsers = await User.find();
+				const ollUsers = await this.User.find();
 				if (
 					msgText == '/start' &&
 					ollUsers.every(user => msgChatId != user.id)
 				) {
-					const addNewUser = new User({
+					const addNewUser = new this.User({
 						id,
 						is_bot,
 						first_name,
