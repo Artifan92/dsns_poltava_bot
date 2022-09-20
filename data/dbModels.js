@@ -1,17 +1,19 @@
 // Импортировать модуль mongoose
-import mongoose from 'mongoose';
 import * as dotenv from 'dotenv';
+import mongoose from 'mongoose';
 
 dotenv.config();
+
+const opts = {
+	dbName: 'bot',
+	user: process.env.USER_MONGO,
+	pass: process.env.PASS_MONGO,
+};
 
 async function connectToDb() {
 	const mongoDB =
 		'mongodb+srv://telegrambot.anjvydp.mongodb.net/?retryWrites=true&w=majority';
-	await mongoose.connect(mongoDB, {
-		dbName: 'bot',
-		user: process.env.USER_MONGO,
-		pass: process.env.PASS_MONGO,
-	});
+	await mongoose.connect(mongoDB, opts);
 }
 
 connectToDb().catch(err => console.log(err));
@@ -38,4 +40,4 @@ const UserSchema = new mongoose.Schema({
 
 const User = mongoose.model('user', UserSchema);
 
-export default User;
+export { User };

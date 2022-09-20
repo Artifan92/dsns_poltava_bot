@@ -1,4 +1,4 @@
-import User from '../data/user.js';
+import { User } from '../data/dbModels.js';
 
 class Commands {
 	constructor(commandList, bot) {
