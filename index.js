@@ -1,3 +1,4 @@
+'use strict';
 import TelegramApi from 'node-telegram-bot-api';
 import * as dotenv from 'dotenv';
 import {
