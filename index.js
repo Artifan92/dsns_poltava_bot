@@ -7,7 +7,6 @@ import {
 	KeyboardModel,
 	CallbackModel,
 } from './data/dbModels.js';
-// import { commands, keyboard, callback } from './services/data.js';
 import Commands from './modules/Commands.js';
 import Keyboard from './modules/Keyboard.js';
 import Callback from './modules/Callback.js';
