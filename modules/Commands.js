@@ -28,15 +28,12 @@ class Commands {
 					is_premium,
 				} = msg.from,
 				msgText = msg.text,
-				msgChatId = msg.chat.id;
+				msgChatId = msg.chat.id,
+				findUser = await this.User.find({ id: msgChatId });
 
 			if (msgText == command) {
 				await this.bot.sendMessage(msgChatId, text, opts);
-				const ollUsers = await this.User.find();
-				if (
-					msgText == '/start' &&
-					ollUsers.every(user => msgChatId != user.id)
-				) {
+				if (msgText == '/start' && findUser.length === 0) {
 					const addNewUser = new this.User({
 						id,
 						is_bot,
