@@ -33,7 +33,7 @@ setKeyboard.render();
 const initcallback = new Callback(callback, bot, {
 	options: {
 		parseMode: 'Markdown',
-		disableWebPagePreview: true,
+		disableWebPagePreview: false,
 	},
 });
 initcallback.render();

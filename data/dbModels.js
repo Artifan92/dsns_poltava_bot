@@ -46,9 +46,22 @@ const UserSchema = new mongoose.Schema({
 		opts: Object,
 	}),
 	CallbackSchema = new mongoose.Schema({
-		callbackData: String,
-		answerText: String,
-		replyMarkup: String,
+		callbackData: {
+			type: String,
+			require: true,
+		},
+		answerText: {
+			type: String,
+			require: true,
+		},
+		text: {
+			type: String,
+			default: null,
+		},
+		replyMarkup: {
+			type: String,
+			default: null,
+		},
 	});
 
 const User = mongoose.model('user', UserSchema),

@@ -23,6 +23,9 @@ class Callback {
 					message_id: callback.message.message_id,
 					reply_markup: item.replyMarkup,
 				};
+			if (!options.reply_markup) {
+				delete options.reply_markup;
+			}
 
 			if (callbackData == msgData) {
 				await this.bot.answerCallbackQuery(callback.id, {
