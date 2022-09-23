@@ -12,7 +12,7 @@ class Callback {
 
 	eventCallback(callback) {
 		this.inlineKeyboardList.forEach(async item => {
-			const keyboard = item.replyMarkup,
+			const text = item.text,
 				callbackData = item.callbackData,
 				msgData = callback.data,
 				answerText = item.answerText,
@@ -21,6 +21,7 @@ class Callback {
 					disable_web_page_preview: this.disableWebPagePreview,
 					chat_id: callback.message.chat.id,
 					message_id: callback.message.message_id,
+					reply_markup: item.replyMarkup,
 				};
 
 			if (callbackData == msgData) {
@@ -29,7 +30,7 @@ class Callback {
 					show_alert: false,
 				});
 
-				await this.bot.editMessageReplyMarkup(keyboard, options);
+				await this.bot.editMessageText(text, options);
 			}
 		});
 	}
