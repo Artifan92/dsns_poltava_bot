@@ -32,6 +32,10 @@ const UserSchema = new mongoose.Schema({
 			type: Boolean,
 			default: false,
 		},
+		alarm_message: {
+			type: Boolean,
+			default: true,
+		},
 	}),
 	CommandSchema = new mongoose.Schema({
 		command: String,
