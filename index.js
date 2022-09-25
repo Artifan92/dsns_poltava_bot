@@ -10,6 +10,7 @@ import {
 import Commands from './modules/Commands.js';
 import Keyboard from './modules/Keyboard.js';
 import Callback from './modules/Callback.js';
+import { getRegion, webHook } from './modules/allarm.js';
 
 dotenv.config();
 const token = process.env.TOKEN;
@@ -37,3 +38,18 @@ const initcallback = new Callback(callback, bot, {
 	},
 });
 initcallback.render();
+
+webHook();
+
+getRegion().then(async data => {
+	await bot.sendMessage(
+		252263254,
+		`Область: ${data[0].regionName}; ${data[0].activeAlerts}`,
+		{
+			parse_mode: 'Markdown',
+			disable_web_page_preview: false,
+		},
+	);
+	console.log(data);
+	console.log(data[0].activeAlerts);
+});
