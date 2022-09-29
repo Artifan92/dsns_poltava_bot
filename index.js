@@ -2,7 +2,7 @@
 import TelegramApi from 'node-telegram-bot-api';
 import * as dotenv from 'dotenv';
 import {
-	User,
+	UserModel,
 	CommandModel,
 	KeyboardModel,
 	CallbackModel,
@@ -10,11 +10,17 @@ import {
 import Commands from './modules/Commands.js';
 import Keyboard from './modules/Keyboard.js';
 import Callback from './modules/Callback.js';
-import { getRegion, webHook } from './modules/allarm.js';
+import Allarm from './modules/Allarm.js';
 
 dotenv.config();
-const token = process.env.TOKEN;
 
+const token = process.env.TOKEN,
+	allarm_token = process.env.ALLARM_TOKEN,
+	PORT = process.env.PORT,
+	webhookUrl = process.env.WEBHOOK_URL,
+	postUrl = process.env.POST_URL;
+
+/** GET DATA FROM DB */
 const commands = await CommandModel.find(),
 	keyboard = await KeyboardModel.find(),
 	callback = await CallbackModel.find();
@@ -23,7 +29,7 @@ const commands = await CommandModel.find(),
 const bot = new TelegramApi(token, { polling: true });
 
 /** SET COMMANDS BOT */
-const setCommandsBot = new Commands(commands, bot, User);
+const setCommandsBot = new Commands(commands, bot, UserModel);
 setCommandsBot.render();
 
 /** SET KEYBOARD */
@@ -39,17 +45,6 @@ const initcallback = new Callback(callback, bot, {
 });
 initcallback.render();
 
-webHook();
-
-getRegion().then(async data => {
-	await bot.sendMessage(
-		252263254,
-		`Область: ${data[0].regionName}; ${data[0].activeAlerts}`,
-		{
-			parse_mode: 'Markdown',
-			disable_web_page_preview: false,
-		},
-	);
-	console.log(data);
-	console.log(data[0].activeAlerts);
-});
+/** ALLARM INIT */
+const allarm = new Allarm(allarm_token, PORT, webhookUrl, postUrl, bot);
+allarm.render();

@@ -1,8 +1,8 @@
 class Commands {
-	constructor(commandList, bot, User) {
+	constructor(commandList, bot, UserModel) {
 		this.commandList = commandList;
 		this.bot = bot;
-		this.User = User;
+		this.User = UserModel;
 	}
 
 	setCommandsList() {

@@ -4,6 +4,8 @@ RUN mkdir -p /usr/src/app
 
 WORKDIR /usr/src/app
 
+
+EXPOSE 3000
 # установка зависимостей
 # символ астериск ("*") используется для того чтобы по возможности
 # скопировать оба файла: package.json и package-lock.json
@@ -15,6 +17,5 @@ RUN npm install
 
 COPY . /usr/src/app
 
-EXPOSE 8080
 
 CMD ["node", "index.js" ]

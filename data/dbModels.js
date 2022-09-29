@@ -36,6 +36,10 @@ const UserSchema = new mongoose.Schema({
 			type: Boolean,
 			default: true,
 		},
+		alarm_region_id: {
+			type: Array,
+			default: [19],
+		},
 	}),
 	CommandSchema = new mongoose.Schema({
 		command: String,
@@ -68,9 +72,9 @@ const UserSchema = new mongoose.Schema({
 		},
 	});
 
-const User = mongoose.model('user', UserSchema),
+const UserModel = mongoose.model('user', UserSchema),
 	CommandModel = mongoose.model('command', CommandSchema),
 	KeyboardModel = mongoose.model('keyboard', KeyboardSchema),
 	CallbackModel = mongoose.model('callback', CallbackSchema);
 
-export { User, CommandModel, KeyboardModel, CallbackModel };
+export { UserModel, CommandModel, KeyboardModel, CallbackModel };
