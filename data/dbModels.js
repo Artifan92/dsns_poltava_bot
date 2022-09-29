@@ -32,11 +32,11 @@ const UserSchema = new mongoose.Schema({
 			type: Boolean,
 			default: false,
 		},
-		alarm_message: {
+		allarm_message: {
 			type: Boolean,
 			default: true,
 		},
-		alarm_region_id: {
+		allarm_region_id: {
 			type: Array,
 			default: [19],
 		},
