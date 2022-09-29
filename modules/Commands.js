@@ -33,9 +33,9 @@ class Commands {
 
 			if (msgText == command) {
 				if (msgText == '/settings_allarm') {
+					const allarmMessage = findUser[0].allarm_message;
 					let inlineKeyboard;
-					console.log(findUser);
-					if (findUser.allarm_message == true) {
+					if (allarmMessage) {
 						inlineKeyboard = [
 							[{ text: 'Відключити', callback_data: 'turn_off_notify_allarm' }],
 						];
