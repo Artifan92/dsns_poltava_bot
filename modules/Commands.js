@@ -75,7 +75,7 @@ class Commands {
 		this.bot.setMyCommands(this.setCommandsList());
 
 		/** LISTENER COMMANDS */
-		this.bot.on('message', msg => {
+		this.bot.onText(/\//, msg => {
 			this.listenerComands(msg);
 		});
 	}
