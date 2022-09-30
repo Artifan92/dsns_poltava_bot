@@ -32,16 +32,27 @@ class Commands {
 				findUser = await this.User.find({ id: msgChatId });
 
 			if (msgText == command) {
+				/**FOR ALLARM */
 				if (msgText == '/settings_allarm') {
 					const allarmMessage = findUser[0].allarm_message;
 					let inlineKeyboard;
 					if (allarmMessage) {
 						inlineKeyboard = [
-							[{ text: 'Відключити', callback_data: 'turn_off_notify_allarm' }],
+							[
+								{
+									text: '🟢 Сповіщення про повітряну тривогу',
+									callback_data: 'turn_off_notify_allarm',
+								},
+							],
 						];
 					} else {
 						inlineKeyboard = [
-							[{ text: 'Включити', callback_data: 'turn_on_notify_allarm' }],
+							[
+								{
+									text: '🔴 Сповіщення про повітряну тривогу',
+									callback_data: 'turn_on_notify_allarm',
+								},
+							],
 						];
 					}
 					await this.bot.sendMessage(msgChatId, text, {
@@ -54,6 +65,7 @@ class Commands {
 					await this.bot.sendMessage(msgChatId, text, opts);
 				}
 
+				/**FOR START */
 				if (msgText == '/start' && findUser.length === 0) {
 					const addNewUser = new this.User({
 						id,
