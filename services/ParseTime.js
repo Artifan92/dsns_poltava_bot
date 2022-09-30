@@ -18,4 +18,8 @@ class ParseTime {
 	}
 }
 
+const newTime = new ParseTime('2022-09-30T10:53:22Z');
+
+console.log(newTime);
+
 export default ParseTime;
