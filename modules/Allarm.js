@@ -1,5 +1,6 @@
 import fetch from 'node-fetch';
 import express from 'express';
+import ParseTime from '../services/ParseTime';
 
 class Allarm {
 	constructor(allarm_token, PORT, webhookUrl, postUrl, bot) {
@@ -34,14 +35,15 @@ class Allarm {
 		const ctx = req.body,
 			{ regionId, allarmType, createdAt, status } = ctx,
 			act = 'activate',
-			deact = 'deactivate';
+			deact = 'deactivate',
+			time = new ParseTime(createdAt);
 
 		if (regionId == 19) {
 			switch (status.toLowerCase()) {
 				case act:
 					await this.bot.sendMessage(
 						252263254,
-						`🔴 <strong>${createdAt} Повітряна тривога в Полтавська область.</strong>\nСлідкуйте за подальшими повідомленнями.\n#Полтавська_область`,
+						`🔴 <strong>${time} Повітряна тривога в Полтавська область.</strong>\nСлідкуйте за подальшими повідомленнями.\n#Полтавська_область`,
 						{
 							parse_mode: 'HTML',
 						},
@@ -51,7 +53,7 @@ class Allarm {
 				case deact:
 					await this.bot.sendMessage(
 						252263254,
-						`🟢 <strong>${createdAt} Відбій тривоги в Полтавська область.</strong>\nСлідкуйте за подальшими повідомленнями.\n#Полтавська_область`,
+						`🟢 <strong>${time} Відбій тривоги в Полтавська область.</strong>\nСлідкуйте за подальшими повідомленнями.\n#Полтавська_область`,
 						{
 							parse_mode: 'HTML',
 						},
