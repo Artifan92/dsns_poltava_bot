@@ -3,12 +3,13 @@ import express from 'express';
 import ParseTime from '../services/ParseTime';
 
 class Allarm {
-	constructor(allarm_token, PORT, webhookUrl, postUrl, bot) {
+	constructor(allarmToken, PORT, webhookUrl, postUrl, bot, UserModel) {
 		this.bot = bot;
-		this.allarm_token = allarm_token;
+		this.allarm_token = allarmToken;
 		this.PORT = PORT;
 		this.webhookUrl = webhookUrl;
 		this.postUrl = postUrl;
+		this.User = UserModel;
 	}
 
 	async webHook() {
@@ -36,7 +37,7 @@ class Allarm {
 			{ regionId, allarmType, createdAt, status } = ctx,
 			act = 'activate',
 			deact = 'deactivate',
-			time = new ParseTime(createdAt);
+			time = new ParseTime(createdAt).render();
 
 		if (regionId == 19) {
 			switch (status.toLowerCase()) {

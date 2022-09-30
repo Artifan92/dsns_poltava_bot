@@ -46,5 +46,12 @@ const initcallback = new Callback(callback, bot, UserModel, {
 initcallback.render();
 
 /** ALLARM INIT */
-const allarm = new Allarm(allarm_token, PORT, webhookUrl, postUrl, bot);
+const allarm = new Allarm(
+	allarm_token,
+	PORT,
+	webhookUrl,
+	postUrl,
+	bot,
+	UserModel,
+);
 allarm.render();
