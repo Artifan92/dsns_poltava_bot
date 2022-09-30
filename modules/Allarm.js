@@ -1,6 +1,6 @@
 import fetch from 'node-fetch';
 import express from 'express';
-import ParseTime from '../services/ParseTime';
+import ParseTime from '../services/ParseTime.js';
 
 class Allarm {
 	constructor(allarmToken, PORT, webhookUrl, postUrl, bot, UserModel) {
