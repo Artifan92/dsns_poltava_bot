@@ -7,9 +7,10 @@ class Keyboard {
 	answerMainMenu(msg) {
 		this.keyboardList.forEach(async item => {
 			const { text, opts, btn } = item,
-				msgText = msg.text,
-				msgChatId = msg.chat.id;
+				msgText = msg.text;
+
 			if (msgText == btn) {
+				const msgChatId = msg.chat.id;
 				await this.bot.sendMessage(msgChatId, text, opts);
 			}
 		});
