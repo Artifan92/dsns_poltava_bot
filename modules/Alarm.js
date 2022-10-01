@@ -32,7 +32,7 @@ class Alarm {
 				accept: '/',
 			},
 			body: JSON.stringify({
-				webHookUrl: `${this.postUrl}:${this.PORT}`,
+				webHookUrl: `${this.postUrl}:${this.PORT}/${this.alarm_token}`,
 			}),
 		});
 
@@ -121,7 +121,7 @@ class Alarm {
 
 		const regions = await this.getRregions();
 
-		app.post('/', (req, res) => {
+		app.post(`/${this.alarm_token}`, (req, res) => {
 			this.alarmPost(req, res, regions, alarmTypes);
 		});
 	}
