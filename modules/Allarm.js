@@ -47,11 +47,35 @@ class Allarm {
 		return await this.TypeAllarm.find();
 	}
 
+	async sendMessageAboutAllarm(status, id, time, regionName, nameAllarm) {
+		const act = 'activate',
+			deact = 'deactivate',
+			messageAboutAct = `🔴 <strong>${time} ${nameAllarm} в ${regionName}.</strong>\nСлідкуйте за подальшими повідомленнями.\n#${regionName.replace(
+				' ',
+				'_',
+			)}`,
+			messageAboutDeact = `🟢 <strong>${time} Відбій тривоги в ${regionName}.</strong>\nСлідкуйте за подальшими повідомленнями.\n#${regionName.replace(
+				' ',
+				'_',
+			)}`;
+
+		switch (status.toLowerCase()) {
+			case act:
+				await this.bot.sendMessage(id, messageAboutAct, {
+					parse_mode: 'HTML',
+				});
+				break;
+			case deact:
+				await this.bot.sendMessage(id, messageAboutDeact, {
+					parse_mode: 'HTML',
+				});
+				break;
+		}
+	}
+
 	async allarmPost(req, res, allarmTypes) {
 		const ctx = req.body,
 			{ regionId, allarmType, createdAt, status } = ctx,
-			act = 'activate',
-			deact = 'deactivate',
 			time = new ParseTime(createdAt).render(),
 			findUsers = await this.User.find(),
 			findRegions = await this.Region.find(),
@@ -67,34 +91,13 @@ class Allarm {
 		findUsers.forEach(async user => {
 			await user.allarm_region_id.forEach(async region => {
 				if (user.allarm_message && regionId == region) {
-					switch (status.toLowerCase()) {
-						case act:
-							await this.bot.sendMessage(
-								user.id,
-								`🔴 <strong>${time} ${nameAllarm} в ${regionName}.</strong>\nСлідкуйте за подальшими повідомленнями.\n#${regionName.replace(
-									' ',
-									'_',
-								)}`,
-								{
-									parse_mode: 'HTML',
-								},
-							);
-
-							break;
-						case deact:
-							await this.bot.sendMessage(
-								user.id,
-								`🟢 <strong>${time} Відбій тривоги в ${regionName}.</strong>\nСлідкуйте за подальшими повідомленнями.\n#${regionName.replace(
-									' ',
-									'_',
-								)}`,
-								{
-									parse_mode: 'HTML',
-								},
-							);
-
-							break;
-					}
+					await this.sendMessageAboutAllarm(
+						status,
+						user.id,
+						time,
+						regionName,
+						nameAllarm,
+					);
 				}
 			});
 		});
