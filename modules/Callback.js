@@ -31,18 +31,18 @@ class Callback {
 				reply_markup: item.replyMarkup,
 			};
 
-			/** FOR ALLARM */
+			/** FOR ALARM */
 			if (
 				!options.reply_markup &&
-				(msgData === 'turn_on_notify_allarm' ||
-					msgData === 'turn_off_notify_allarm')
+				(msgData === 'turn_on_notify_alarm' ||
+					msgData === 'turn_off_notify_alarm')
 			) {
 				let inlineKeyboard;
 				switch (msgData) {
-					case 'turn_on_notify_allarm':
+					case 'turn_on_notify_alarm':
 						await this.User.findOneAndUpdate(
 							{ id: options.chat_id },
-							{ allarm_message: true },
+							{ alarm_message: true },
 							{
 								new: true,
 							},
@@ -51,15 +51,15 @@ class Callback {
 							[
 								{
 									text: '🟢 Сповіщення про повітряну тривогу',
-									callback_data: 'turn_off_notify_allarm',
+									callback_data: 'turn_off_notify_alarm',
 								},
 							],
 						];
 						break;
-					case 'turn_off_notify_allarm':
+					case 'turn_off_notify_alarm':
 						await this.User.findOneAndUpdate(
 							{ id: options.chat_id },
-							{ allarm_message: false },
+							{ alarm_message: false },
 							{
 								new: true,
 							},
@@ -68,7 +68,7 @@ class Callback {
 							[
 								{
 									text: '🔴 Сповіщення про повітряну тривогу',
-									callback_data: 'turn_on_notify_allarm',
+									callback_data: 'turn_on_notify_alarm',
 								},
 							],
 						];

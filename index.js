@@ -7,17 +7,17 @@ import {
 	KeyboardModel,
 	CallbackModel,
 	RegionModel,
-	TypeAllarmModel,
+	TypeAlarmModel,
 } from './data/dbModels.js';
 import Commands from './modules/Commands.js';
 import Keyboard from './modules/Keyboard.js';
 import Callback from './modules/Callback.js';
-import Allarm from './modules/Allarm.js';
+import Alarm from './modules/Alarm.js';
 
 dotenv.config();
 
 const token = process.env.TOKEN,
-	allarm_token = process.env.ALLARM_TOKEN,
+	alarm_token = process.env.ALARM_TOKEN,
 	PORT = process.env.PORT,
 	webhookUrl = process.env.WEBHOOK_URL,
 	postUrl = process.env.POST_URL;
@@ -47,15 +47,15 @@ const initcallback = new Callback(callback, bot, UserModel, {
 });
 initcallback.render();
 
-/** ALLARM INIT */
-const allarm = new Allarm(
-	allarm_token,
+/** ALARM INIT */
+const alarm = new Alarm(
+	alarm_token,
 	PORT,
 	webhookUrl,
 	postUrl,
 	bot,
 	UserModel,
 	RegionModel,
-	TypeAllarmModel,
+	TypeAlarmModel,
 );
-allarm.render();
+alarm.render();

@@ -32,11 +32,11 @@ const UserSchema = new mongoose.Schema({
 			type: Boolean,
 			default: false,
 		},
-		allarm_message: {
+		alarm_message: {
 			type: Boolean,
 			default: false,
 		},
-		allarm_region_id: {
+		alarm_region_id: {
 			type: Array,
 			default: [19],
 		},
@@ -89,8 +89,8 @@ const UserSchema = new mongoose.Schema({
 			require: true,
 		},
 	}),
-	TypeAllarmSchema = new mongoose.Schema({
-		allarmType: {
+	TypeAlarmSchema = new mongoose.Schema({
+		alarmType: {
 			type: String,
 			require: true,
 		},
@@ -105,7 +105,7 @@ const UserModel = mongoose.model('user', UserSchema),
 	KeyboardModel = mongoose.model('keyboard', KeyboardSchema),
 	CallbackModel = mongoose.model('callback', CallbackSchema),
 	RegionModel = mongoose.model('region', RegionSchema),
-	TypeAllarmModel = mongoose.model('typeallarm', TypeAllarmSchema);
+	TypeAlarmModel = mongoose.model('typealarm', TypeAlarmSchema);
 
 export {
 	UserModel,
@@ -113,5 +113,5 @@ export {
 	KeyboardModel,
 	CallbackModel,
 	RegionModel,
-	TypeAllarmModel,
+	TypeAlarmModel,
 };

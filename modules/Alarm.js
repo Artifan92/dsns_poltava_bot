@@ -2,25 +2,25 @@ import fetch from 'node-fetch';
 import express from 'express';
 import ParseTime from '../services/ParseTime.js';
 
-class Allarm {
+class Alarm {
 	constructor(
-		allarmToken,
+		alarmToken,
 		PORT,
 		webhookUrl,
 		postUrl,
 		bot,
 		UserModel,
 		RegionModel,
-		TypeAllarmModel,
+		TypeAlarmModel,
 	) {
 		this.bot = bot;
-		this.allarm_token = allarmToken;
+		this.alarm_token = alarmToken;
 		this.PORT = PORT;
 		this.webhookUrl = webhookUrl;
 		this.postUrl = postUrl;
 		this.User = UserModel;
 		this.Region = RegionModel;
-		this.TypeAllarm = TypeAllarmModel;
+		this.TypeAlarm = TypeAlarmModel;
 	}
 
 	async webHook() {
@@ -28,7 +28,7 @@ class Allarm {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
-				authorization: this.allarm_token,
+				authorization: this.alarm_token,
 				accept: '/',
 			},
 			body: JSON.stringify({
@@ -43,18 +43,22 @@ class Allarm {
 		}
 	}
 
-	async allarmTypes() {
-		return await this.TypeAllarm.find();
+	async getAlarmTypes() {
+		return await this.TypeAlarm.find();
 	}
 
-	async sendMessageAboutAllarm(status, id, time, regionName, nameAllarm) {
+	async getRregions() {
+		return await this.Region.find();
+	}
+
+	async sendMessageAboutAlarm(status, id, time, regionName, nameAlarm) {
 		const act = 'activate',
 			deact = 'deactivate',
-			messageAboutAct = `🔴 <strong>${time} ${nameAllarm} в ${regionName}.</strong>\nСлідкуйте за подальшими повідомленнями.\n#${regionName.replace(
+			messageAboutAct = `🔴 <strong>${time} ${nameAlarm} в ${regionName}.</strong>\nСлідкуйте за подальшими повідомленнями.\n#Тривога #${regionName.replace(
 				' ',
 				'_',
 			)}`,
-			messageAboutDeact = `🟢 <strong>${time} Відбій тривоги в ${regionName}.</strong>\nСлідкуйте за подальшими повідомленнями.\n#${regionName.replace(
+			messageAboutDeact = `🟢 <strong>${time} Відбій тривоги в ${regionName}.</strong>\nСлідкуйте за подальшими повідомленнями.\n#Тривога #${regionName.replace(
 				' ',
 				'_',
 			)}`;
@@ -73,30 +77,27 @@ class Allarm {
 		}
 	}
 
-	async allarmPost(req, res, allarmTypes) {
+	async alarmPost(req, res, regions, alarmTypes) {
 		const ctx = req.body,
-			{ regionId, allarmType, createdAt, status } = ctx,
-			time = new ParseTime(createdAt).render(),
-			findUsers = await this.User.find(),
-			findRegions = await this.Region.find(),
-			region = findRegions.find(region => region.regionId == regionId),
-			regionName = region.regionName,
-			regionType = region.regionType,
-			nameAllarm = allarmTypes.find(
-				type => type.allarmType == allarmType,
-			).message;
-
-		console.log(ctx);
+			{ status, regionId, alarmType, createdAt } = ctx,
+			findUsers = await this.User.find({ alarm_message: true }).exec();
 
 		findUsers.forEach(async user => {
-			await user.allarm_region_id.forEach(async region => {
-				if (user.allarm_message && regionId == region) {
-					await this.sendMessageAboutAllarm(
+			await user.alarm_region_id.forEach(async region => {
+				if (regionId == region) {
+					const time = new ParseTime(createdAt).render(),
+						region = regions.find(region => region.regionId == regionId),
+						regionName = region.regionName,
+						regionType = region.regionType,
+						nameAlarm = alarmTypes.find(
+							type => type.alarmType == alarmType,
+						).message;
+					await this.sendMessageAboutAlarm(
 						status,
 						user.id,
 						time,
 						regionName,
-						nameAllarm,
+						nameAlarm,
 					);
 				}
 			});
@@ -116,15 +117,17 @@ class Allarm {
 			console.log(`🚀 Server running on port ${this.PORT}`),
 		);
 
-		const allarmTypes = await this.allarmTypes();
+		const alarmTypes = await this.getAlarmTypes();
+
+		const regions = await this.getRregions();
 
 		app.post('/', (req, res) => {
-			this.allarmPost(req, res, allarmTypes);
+			this.alarmPost(req, res, regions, alarmTypes);
 		});
 	}
 }
 
-export default Allarm;
+export default Alarm;
 
 // async function getRegion() {
 // 	const url = 'https://api.ukrainealarm.com/api/v3/alerts/status';
@@ -132,7 +135,7 @@ export default Allarm;
 // 		method: 'GET',
 // 		headers: {
 // 			'Content-Type': 'application/json',
-// 			authorization: process.env.ALLARM_TOKEN,
+// 			authorization: process.env.ALARM_TOKEN,
 // 		},
 // 	});
 

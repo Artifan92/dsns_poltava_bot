@@ -32,16 +32,16 @@ class Commands {
 				findUser = await this.User.find({ id: msgChatId });
 
 			if (msgText == command) {
-				/**FOR ALLARM */
-				if (msgText == '/settings_allarm') {
-					const allarmMessage = findUser[0].allarm_message;
+				/**FOR ALARM */
+				if (msgText == '/settings_alarm') {
+					const alarmMessage = findUser[0].alarm_message;
 					let inlineKeyboard;
-					if (allarmMessage) {
+					if (alarmMessage) {
 						inlineKeyboard = [
 							[
 								{
 									text: '🟢 Сповіщення про повітряну тривогу',
-									callback_data: 'turn_off_notify_allarm',
+									callback_data: 'turn_off_notify_alarm',
 								},
 							],
 						];
@@ -50,7 +50,7 @@ class Commands {
 							[
 								{
 									text: '🔴 Сповіщення про повітряну тривогу',
-									callback_data: 'turn_on_notify_allarm',
+									callback_data: 'turn_on_notify_alarm',
 								},
 							],
 						];
