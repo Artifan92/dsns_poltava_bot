@@ -4,13 +4,15 @@ class ParseTime {
 	}
 
 	parseTime() {
-		let hours, minutes;
-		const timeParse = Date.parse(this.time);
+		const timeParse = new Date(Date.parse(this.time))
+			.toLocaleTimeString('uk-UA', {
+				hour: '2-digit',
+				minute: '2-digit',
+				second: '2-digit',
+			})
+			.substring(0, 5);
 
-		(hours = Math.floor((timeParse / (1000 * 60 * 60)) % 24)),
-			(minutes = Math.floor((timeParse / (1000 * 60)) % 60));
-
-		return `${hours}:${minutes}`;
+		return timeParse;
 	}
 
 	render() {

@@ -37,7 +37,10 @@ class Allarm {
 			{ regionId, allarmType, createdAt, status } = ctx,
 			act = 'activate',
 			deact = 'deactivate',
-			time = new ParseTime(createdAt).render();
+			time = new ParseTime(createdAt).render(),
+			findUser = await this.User.find();
+
+		console.log(findUser);
 
 		if (regionId == 19) {
 			switch (status.toLowerCase()) {
