@@ -62,6 +62,8 @@ class Allarm {
 				type => type.allarmType == allarmType,
 			).message;
 
+		console.log(ctx);
+
 		findUsers.forEach(async user => {
 			await user.allarm_region_id.forEach(async region => {
 				if (user.allarm_message && regionId == region) {
