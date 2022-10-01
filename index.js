@@ -6,6 +6,8 @@ import {
 	CommandModel,
 	KeyboardModel,
 	CallbackModel,
+	RegionModel,
+	TypeAllarmModel,
 } from './data/dbModels.js';
 import Commands from './modules/Commands.js';
 import Keyboard from './modules/Keyboard.js';
@@ -53,5 +55,7 @@ const allarm = new Allarm(
 	postUrl,
 	bot,
 	UserModel,
+	RegionModel,
+	TypeAllarmModel,
 );
 allarm.render();

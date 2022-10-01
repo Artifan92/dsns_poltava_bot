@@ -3,13 +3,24 @@ import express from 'express';
 import ParseTime from '../services/ParseTime.js';
 
 class Allarm {
-	constructor(allarmToken, PORT, webhookUrl, postUrl, bot, UserModel) {
+	constructor(
+		allarmToken,
+		PORT,
+		webhookUrl,
+		postUrl,
+		bot,
+		UserModel,
+		RegionModel,
+		TypeAllarmModel,
+	) {
 		this.bot = bot;
 		this.allarm_token = allarmToken;
 		this.PORT = PORT;
 		this.webhookUrl = webhookUrl;
 		this.postUrl = postUrl;
 		this.User = UserModel;
+		this.Region = RegionModel;
+		this.TypeAllarm = TypeAllarmModel;
 	}
 
 	async webHook() {
@@ -32,45 +43,64 @@ class Allarm {
 		}
 	}
 
-	async allarmPost(req, res) {
+	async allarmTypes() {
+		return await this.TypeAllarm.find();
+	}
+
+	async allarmPost(req, res, allarmTypes) {
 		const ctx = req.body,
 			{ regionId, allarmType, createdAt, status } = ctx,
 			act = 'activate',
 			deact = 'deactivate',
 			time = new ParseTime(createdAt).render(),
-			findUser = await this.User.find();
+			findUsers = await this.User.find(),
+			findRegions = await this.Region.find(),
+			region = findRegions.find(region => region.regionId == regionId),
+			regionName = region.regionName,
+			regionType = region.regionType,
+			nameAllarm = allarmTypes.find(
+				type => type.allarmType == allarmType,
+			).message;
 
-		console.log(findUser);
+		findUsers.forEach(async user => {
+			await user.allarm_region_id.forEach(async region => {
+				if (user.allarm_message && regionId == region) {
+					switch (status.toLowerCase()) {
+						case act:
+							await this.bot.sendMessage(
+								user.id,
+								`🔴 <strong>${time} ${nameAllarm} в ${regionName}.</strong>\nСлідкуйте за подальшими повідомленнями.\n#${regionName.replace(
+									' ',
+									'_',
+								)}`,
+								{
+									parse_mode: 'HTML',
+								},
+							);
 
-		if (regionId == 19) {
-			switch (status.toLowerCase()) {
-				case act:
-					await this.bot.sendMessage(
-						252263254,
-						`🔴 <strong>${time} Повітряна тривога в Полтавська область.</strong>\nСлідкуйте за подальшими повідомленнями.\n#Полтавська_область`,
-						{
-							parse_mode: 'HTML',
-						},
-					);
+							break;
+						case deact:
+							await this.bot.sendMessage(
+								user.id,
+								`🟢 <strong>${time} Відбій тривоги в ${regionName}.</strong>\nСлідкуйте за подальшими повідомленнями.\n#${regionName.replace(
+									' ',
+									'_',
+								)}`,
+								{
+									parse_mode: 'HTML',
+								},
+							);
 
-					break;
-				case deact:
-					await this.bot.sendMessage(
-						252263254,
-						`🟢 <strong>${time} Відбій тривоги в Полтавська область.</strong>\nСлідкуйте за подальшими повідомленнями.\n#Полтавська_область`,
-						{
-							parse_mode: 'HTML',
-						},
-					);
-
-					break;
-			}
-		}
+							break;
+					}
+				}
+			});
+		});
 
 		res.status(200).end();
 	}
 
-	render() {
+	async render() {
 		this.webHook();
 
 		const app = express();
@@ -81,8 +111,10 @@ class Allarm {
 			console.log(`🚀 Server running on port ${this.PORT}`),
 		);
 
+		const allarmTypes = await this.allarmTypes();
+
 		app.post('/', (req, res) => {
-			this.allarmPost(req, res);
+			this.allarmPost(req, res, allarmTypes);
 		});
 	}
 }

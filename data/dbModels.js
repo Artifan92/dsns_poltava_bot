@@ -34,7 +34,7 @@ const UserSchema = new mongoose.Schema({
 		},
 		allarm_message: {
 			type: Boolean,
-			default: true,
+			default: false,
 		},
 		allarm_region_id: {
 			type: Array,
@@ -70,11 +70,48 @@ const UserSchema = new mongoose.Schema({
 			type: String,
 			default: null,
 		},
+	}),
+	RegionSchema = new mongoose.Schema({
+		regionId: {
+			type: Number,
+			require: true,
+		},
+		regionName: {
+			type: String,
+			require: true,
+		},
+		regionType: {
+			type: String,
+			require: true,
+		},
+		regionChildIds: {
+			type: Array,
+			require: true,
+		},
+	}),
+	TypeAllarmSchema = new mongoose.Schema({
+		allarmType: {
+			type: String,
+			require: true,
+		},
+		message: {
+			type: String,
+			require: true,
+		},
 	});
 
 const UserModel = mongoose.model('user', UserSchema),
 	CommandModel = mongoose.model('command', CommandSchema),
 	KeyboardModel = mongoose.model('keyboard', KeyboardSchema),
-	CallbackModel = mongoose.model('callback', CallbackSchema);
+	CallbackModel = mongoose.model('callback', CallbackSchema),
+	RegionModel = mongoose.model('region', RegionSchema),
+	TypeAllarmModel = mongoose.model('typeallarm', TypeAllarmSchema);
 
-export { UserModel, CommandModel, KeyboardModel, CallbackModel };
+export {
+	UserModel,
+	CommandModel,
+	KeyboardModel,
+	CallbackModel,
+	RegionModel,
+	TypeAllarmModel,
+};
