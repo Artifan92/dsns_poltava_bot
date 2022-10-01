@@ -18,23 +18,24 @@ class Commands {
 	listenerComands(msg) {
 		this.commandList.forEach(async item => {
 			const { text, opts, command } = item,
-				{
-					id,
-					is_bot,
-					first_name,
-					last_name,
-					username,
-					language_code,
-					is_premium,
-				} = msg.from,
-				msgText = msg.text,
-				msgChatId = msg.chat.id,
-				findUser = await this.User.find({ id: msgChatId });
+				msgText = msg.text;
 
 			if (msgText == command) {
+				const {
+						id,
+						is_bot,
+						first_name,
+						last_name,
+						username,
+						language_code,
+						is_premium,
+					} = msg.from,
+					msgChatId = msg.chat.id,
+					findUser = await this.User.findOne({ id: msgChatId }).exec();
+
 				/**FOR ALARM */
 				if (msgText == '/settings_alarm') {
-					const alarmMessage = findUser[0].alarm_message;
+					const alarmMessage = findUser.alarm_message;
 					let inlineKeyboard;
 					if (alarmMessage) {
 						inlineKeyboard = [
@@ -66,7 +67,7 @@ class Commands {
 				}
 
 				/**FOR START */
-				if (msgText == '/start' && findUser.length === 0) {
+				if (msgText == '/start' && !findUser) {
 					const addNewUser = new this.User({
 						id,
 						is_bot,
@@ -77,6 +78,22 @@ class Commands {
 						is_premium,
 					});
 					await addNewUser.save();
+				} else if (msgText == '/start' && findUser) {
+					await this.User.findOneAndUpdate(
+						{ id: msgChatId },
+						{
+							id,
+							is_bot,
+							first_name,
+							last_name,
+							username,
+							language_code,
+							is_premium,
+						},
+						{
+							new: true,
+						},
+					);
 				}
 			}
 		});
