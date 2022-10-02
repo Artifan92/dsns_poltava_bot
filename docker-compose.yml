@@ -5,6 +5,6 @@ services:
     image: artifan/dsns-poltava-bot:latest
     restart: always
     ports:
-      - 3000:8080
+      - '8080:3000'
     environment:
       - TZ=Europe/Kiev
