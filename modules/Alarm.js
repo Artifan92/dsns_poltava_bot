@@ -29,7 +29,6 @@ class Alarm {
 			headers: {
 				'Content-Type': 'application/json',
 				authorization: this.alarm_token,
-				accept: '/',
 			},
 			body: JSON.stringify({
 				webHookUrl: `${this.postUrl}:${this.PORT}/alarm`,
