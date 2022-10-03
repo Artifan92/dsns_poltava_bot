@@ -1,12 +1,18 @@
 class Commands {
-	constructor(commandList, bot, UserModel) {
-		this.commandList = commandList;
+	constructor(CommandModel, bot, UserModel) {
+		this.commandsList = CommandModel;
 		this.bot = bot;
 		this.User = UserModel;
 	}
 
-	setCommandsList() {
-		return this.commandList.reduce((acum, current) => {
+	async setCommandsList() {
+		const commands = await this.commandsList
+			.find({ show: true }, 'command description', {
+				sort: { numberOfOrder: 1 },
+			})
+			.exec();
+
+		return commands.reduce((acum, current) => {
 			acum.push({
 				command: current.command,
 				description: current.description,
@@ -15,8 +21,8 @@ class Commands {
 		}, []);
 	}
 
-	listenerComands(msg) {
-		this.commandList.forEach(async item => {
+	listenerComands(msg, commands) {
+		commands.forEach(async item => {
 			const { text, opts, command } = item,
 				msgText = msg.text;
 
@@ -99,13 +105,15 @@ class Commands {
 		});
 	}
 
-	render() {
+	async render() {
+		const commands = await this.commandsList.find();
+
 		/** SET COMMANDS */
-		this.bot.setMyCommands(this.setCommandsList());
+		this.bot.setMyCommands(await this.setCommandsList());
 
 		/** LISTENER COMMANDS */
 		this.bot.onText(/\//, msg => {
-			this.listenerComands(msg);
+			this.listenerComands(msg, commands);
 		});
 	}
 }

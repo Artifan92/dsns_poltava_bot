@@ -23,15 +23,14 @@ const token = process.env.TELEGRAM_BOT_CONFIG_TOKEN,
 	postUrl = process.env.EXPRESS_CONFIG_POST_URL;
 
 /** GET DATA FROM DB */
-const commands = await CommandModel.find(),
-	keyboard = await KeyboardModel.find(),
+const keyboard = await KeyboardModel.find(),
 	callback = await CallbackModel.find();
 
 /** BOT INIT */
 const bot = new TelegramApi(token, { polling: true });
 
 /** SET COMMANDS BOT */
-const setCommandsBot = new Commands(commands, bot, UserModel);
+const setCommandsBot = new Commands(CommandModel, bot, UserModel);
 setCommandsBot.render();
 
 /** SET KEYBOARD */

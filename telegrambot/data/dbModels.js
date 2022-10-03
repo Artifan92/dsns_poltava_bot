@@ -43,6 +43,8 @@ const UserSchema = new mongoose.Schema({
 	}),
 	CommandSchema = new mongoose.Schema({
 		command: String,
+		numberOfOrder: Number,
+		show: Boolean,
 		description: String,
 		text: String,
 		opts: Object,
