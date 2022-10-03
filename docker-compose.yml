@@ -1,10 +1,13 @@
 version: '3.8'
 services:
   bot:
-    build: ./
+    build: ./telegrambot
     image: artifan/dsns-poltava-bot:latest
     restart: always
     ports:
       - '8080:3000'
     environment:
       - TZ=Europe/Kiev
+    volumes:
+      - /usr/src/app/node_modules
+      - ./telegrambot:/usr/src/app
