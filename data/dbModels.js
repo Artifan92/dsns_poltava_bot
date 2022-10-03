@@ -3,8 +3,8 @@ import * as dotenv from 'dotenv';
 
 dotenv.config();
 
-const user = process.env.USER_MONGO,
-	pass = process.env.PASS_MONGO;
+const user = process.env.MONGO_CONFIG_USER,
+	pass = process.env.MONGO_CONFIG_PASS;
 
 async function connectToDb() {
 	const mongoDB = `mongodb+srv://${user}:${pass}@telegrambot.anjvydp.mongodb.net/?retryWrites=true&w=majority`;

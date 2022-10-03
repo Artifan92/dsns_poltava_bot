@@ -16,11 +16,11 @@ import Alarm from './modules/Alarm.js';
 
 dotenv.config();
 
-const token = process.env.TOKEN,
-	alarm_token = process.env.ALARM_TOKEN,
-	PORT = process.env.PORT,
-	webhookUrl = process.env.WEBHOOK_URL,
-	postUrl = process.env.POST_URL;
+const token = process.env.TELEGRAM_BOT_CONFIG_TOKEN,
+	alarm_token = process.env.ALARM_API_CONFIG_TOKEN,
+	webhookUrl = process.env.ALARM_API_CONFIG_WEBHOOK_URL,
+	PORT = process.env.EXPRESS_CONFIG_PORT,
+	postUrl = process.env.EXPRESS_CONFIG_POST_URL;
 
 /** GET DATA FROM DB */
 const commands = await CommandModel.find(),
