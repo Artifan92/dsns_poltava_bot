@@ -31,7 +31,7 @@ class Alarm {
 				authorization: this.alarm_token,
 			},
 			body: JSON.stringify({
-				webHookUrl: `${this.postUrl}:${this.PORT}/alarm`,
+				webHookUrl: `${this.postUrl}/alarm`,
 			}),
 		});
 
