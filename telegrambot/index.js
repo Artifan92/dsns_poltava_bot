@@ -19,7 +19,7 @@ dotenv.config();
 const token = process.env.TELEGRAM_BOT_CONFIG_TOKEN,
 	alarm_token = process.env.ALARM_API_CONFIG_TOKEN,
 	webhookUrl = process.env.ALARM_API_CONFIG_WEBHOOK_URL,
-	PORT = process.env.EXPRESS_CONFIG_PORT,
+	port = process.env.EXPRESS_CONFIG_PORT,
 	postUrl = process.env.EXPRESS_CONFIG_POST_URL;
 
 /** GET DATA FROM DB */
@@ -49,7 +49,7 @@ initcallback.render();
 /** ALARM INIT */
 const alarm = new Alarm(
 	alarm_token,
-	PORT,
+	port,
 	webhookUrl,
 	postUrl,
 	bot,

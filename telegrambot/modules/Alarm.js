@@ -5,7 +5,7 @@ import ParseTime from '../services/ParseTime.js';
 class Alarm {
 	constructor(
 		alarmToken,
-		PORT,
+		port,
 		webhookUrl,
 		postUrl,
 		bot,
@@ -15,7 +15,7 @@ class Alarm {
 	) {
 		this.bot = bot;
 		this.alarm_token = alarmToken;
-		this.PORT = PORT;
+		this.port = port;
 		this.webhookUrl = webhookUrl;
 		this.postUrl = postUrl;
 		this.User = UserModel;
@@ -112,8 +112,8 @@ class Alarm {
 
 		app.use(express.json());
 
-		app.listen(this.PORT, () =>
-			console.log(`🚀 Server running on port ${this.PORT}`),
+		app.listen(this.port, () =>
+			console.log(`🚀 Server running on port ${this.port}`),
 		);
 
 		const alarmTypes = await this.getAlarmTypes();
