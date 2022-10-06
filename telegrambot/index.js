@@ -23,8 +23,7 @@ const token = process.env.TELEGRAM_BOT_CONFIG_TOKEN,
 	postUrl = process.env.EXPRESS_CONFIG_POST_URL;
 
 /** GET DATA FROM DB */
-const keyboard = await KeyboardModel.find(),
-	callback = await CallbackModel.find();
+const keyboard = await KeyboardModel.find();
 
 /** BOT INIT */
 const bot = new TelegramApi(token, { polling: true });
@@ -38,7 +37,7 @@ const setKeyboard = new Keyboard(keyboard, bot);
 setKeyboard.render();
 
 /** CALLBACK */
-const initcallback = new Callback(callback, bot, UserModel, {
+const initcallback = new Callback(CallbackModel, bot, UserModel, {
 	options: {
 		parseMode: 'Markdown',
 		disableWebPagePreview: false,

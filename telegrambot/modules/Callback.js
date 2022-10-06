@@ -1,18 +1,36 @@
 class Callback {
 	constructor(
-		inlineKeyboardList,
+		CallbackModel,
 		bot,
 		UserModel,
 		{ options: { parseMode = false, disableWebPagePreview = false } = {} },
 	) {
-		this.inlineKeyboardList = inlineKeyboardList;
+		this.Callback = CallbackModel;
 		this.bot = bot;
 		this.parseMode = parseMode;
 		this.disableWebPagePreview = disableWebPagePreview;
 		this.User = UserModel;
 	}
 
-	async eventCallback(callback) {
+	async getAlarmTypes(type) {
+		if (type) {
+			return await this.Callback.find({ typeCallback: type }).exec();
+		} else {
+			return await this.Callback.find();
+		}
+	}
+
+	async setAlarmMessageToUsers(id, alarmMessage) {
+		await this.User.findOneAndUpdate(
+			{ id: id },
+			{ alarm_message: alarmMessage },
+			{
+				new: true,
+			},
+		);
+	}
+
+	async eventCallback(callback, callbacksAll, alarmCallbacks) {
 		const msgData = callback.data;
 		let options = {
 			parse_mode: this.parseMode,
@@ -22,53 +40,44 @@ class Callback {
 		};
 
 		/** ITERATION CALLBACK */
-		this.inlineKeyboardList.forEach(async item => {
+		callbacksAll.forEach(async item => {
 			const text = item.text,
 				callbackData = item.callbackData,
-				answerText = item.answerText;
+				answerText = item.answerText,
+				textEditInlineKeyboard = item.textEditInlineKeyboard,
+				callbackDataEditInlineKeyboard = item.callbackDataEditInlineKeyboard;
+
 			options = {
 				...options,
-				reply_markup: item.replyMarkup,
+				reply_markup: item.replyMarkup
+					? item.replyMarkup
+					: delete options.reply_markup,
 			};
 
 			/** FOR ALARM */
-			if (
-				!options.reply_markup &&
-				(msgData === 'turn_on_notify_alarm' ||
-					msgData === 'turn_off_notify_alarm')
-			) {
+			if (callback.typeCallback === 'alarm') {
 				let inlineKeyboard;
 				switch (msgData) {
 					case 'turn_on_notify_alarm':
-						await this.User.findOneAndUpdate(
-							{ id: options.chat_id },
-							{ alarm_message: true },
-							{
-								new: true,
-							},
-						);
+						this.setAlarmMessageToUsers(options.chat_id, true);
+
 						inlineKeyboard = [
 							[
 								{
-									text: '🟢 Сповіщення про повітряну тривогу',
-									callback_data: 'turn_off_notify_alarm',
+									text: textEditInlineKeyboard,
+									callback_data: callbackDataEditInlineKeyboard,
 								},
 							],
 						];
 						break;
 					case 'turn_off_notify_alarm':
-						await this.User.findOneAndUpdate(
-							{ id: options.chat_id },
-							{ alarm_message: false },
-							{
-								new: true,
-							},
-						);
+						this.setAlarmMessageToUsers(options.chat_id, false);
+
 						inlineKeyboard = [
 							[
 								{
-									text: '🔴 Сповіщення про повітряну тривогу',
-									callback_data: 'turn_on_notify_alarm',
+									text: textEditInlineKeyboard,
+									callback_data: callbackDataEditInlineKeyboard,
 								},
 							],
 						];
@@ -77,11 +86,6 @@ class Callback {
 				options.reply_markup = JSON.stringify({
 					inline_keyboard: inlineKeyboard,
 				});
-			}
-
-			/** IF REPLY_MARKUP UNDEFINE - DELETE REPLY_MARKUP */
-			if (!options.reply_markup) {
-				delete options.reply_markup;
 			}
 
 			/** ANSWER CALLBACK. EDITMEASSAGE OR EDITREPLYMARKUP */
@@ -100,9 +104,12 @@ class Callback {
 		});
 	}
 
-	render() {
+	async render() {
+		const callbacksAll = await this.getAlarmTypes();
+		const alarmCallbacks = await this.getAlarmTypes('alarm');
+
 		this.bot.on('callback_query', callback => {
-			this.eventCallback(callback);
+			this.eventCallback(callback, callbacksAll, alarmCallbacks);
 		});
 	}
 }
