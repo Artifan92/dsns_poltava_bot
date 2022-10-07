@@ -68,13 +68,8 @@ const UserSchema = new mongoose.Schema({
 			type: String,
 			default: null,
 		},
-		replyMarkup: {
-			type: String,
-			default: null,
-		},
+		replyMarkup: String,
 		typeCallback: String,
-		textEditInlineKeyboard: String,
-		callbackDataEditInlineKeyboard: String,
 	}),
 	RegionSchema = new mongoose.Schema({
 		regionId: {

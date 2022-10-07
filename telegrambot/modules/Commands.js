@@ -21,10 +21,12 @@ class Commands {
 		}, []);
 	}
 
-	listenerComands(msg, commands) {
+	async listenerComands(msg) {
+		const commands = await this.commandsList.find(),
+			msgText = msg.text;
+
 		commands.forEach(async item => {
-			const { text, opts, command } = item,
-				msgText = msg.text;
+			const { text, opts, command } = item;
 
 			if (msgText == command) {
 				const {
@@ -38,39 +40,6 @@ class Commands {
 					} = msg.from,
 					msgChatId = msg.chat.id,
 					findUser = await this.User.findOne({ id: msgChatId }).exec();
-
-				/**FOR ALARM */
-				if (msgText == '/settings_alarm') {
-					const alarmMessage = findUser.alarm_message;
-					let inlineKeyboard;
-					if (alarmMessage) {
-						inlineKeyboard = [
-							[
-								{
-									text: '🟢 Сповіщення про повітряну тривогу',
-									callback_data: 'turn_off_notify_alarm',
-								},
-							],
-						];
-					} else {
-						inlineKeyboard = [
-							[
-								{
-									text: '🔴 Сповіщення про повітряну тривогу',
-									callback_data: 'turn_on_notify_alarm',
-								},
-							],
-						];
-					}
-					await this.bot.sendMessage(msgChatId, text, {
-						...opts,
-						reply_markup: JSON.stringify({
-							inline_keyboard: inlineKeyboard,
-						}),
-					});
-				} else {
-					await this.bot.sendMessage(msgChatId, text, opts);
-				}
 
 				/**FOR START */
 				if (msgText == '/start' && !findUser) {
@@ -101,19 +70,19 @@ class Commands {
 						},
 					);
 				}
+
+				await this.bot.sendMessage(msgChatId, text, opts);
 			}
 		});
 	}
 
 	async render() {
-		const commands = await this.commandsList.find();
-
 		/** SET COMMANDS */
 		this.bot.setMyCommands(await this.setCommandsList());
 
 		/** LISTENER COMMANDS */
 		this.bot.onText(/\//, msg => {
-			this.listenerComands(msg, commands);
+			this.listenerComands(msg);
 		});
 	}
 }

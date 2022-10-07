@@ -37,7 +37,7 @@ const setKeyboard = new Keyboard(keyboard, bot);
 setKeyboard.render();
 
 /** CALLBACK */
-const initcallback = new Callback(CallbackModel, bot, UserModel, {
+const initcallback = new Callback(CallbackModel, bot, UserModel, CommandModel, {
 	options: {
 		parseMode: 'Markdown',
 		disableWebPagePreview: false,
