@@ -29,7 +29,12 @@ const keyboard = await KeyboardModel.find();
 const bot = new TelegramApi(token, { polling: true });
 
 /** SET COMMANDS BOT */
-const setCommandsBot = new Commands(CommandModel, bot, UserModel);
+const setCommandsBot = new Commands(
+	CommandModel,
+	bot,
+	UserModel,
+	CallbackModel,
+);
 setCommandsBot.render();
 
 /** SET KEYBOARD */

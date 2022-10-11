@@ -1,8 +1,9 @@
 class Commands {
-	constructor(CommandModel, bot, UserModel) {
+	constructor(CommandModel, bot, UserModel, CallbackModel) {
 		this.commandsList = CommandModel;
 		this.bot = bot;
 		this.User = UserModel;
+		this.Callback = CallbackModel;
 	}
 
 	async setCommandsList() {
@@ -19,6 +20,85 @@ class Commands {
 			});
 			return acum;
 		}, []);
+	}
+
+	async addNewUser(user) {
+		const addNewUser = new this.User(user);
+		await addNewUser.save();
+	}
+
+	async updateUser(msgChatId, user) {
+		await this.User.findOneAndUpdate({ id: msgChatId }, user, {
+			new: true,
+		});
+	}
+
+	async setReplyMarkup(user) {
+		const notifyUser = user.alarm_message;
+		const regionsUser = user.alarm_region_id;
+		const regions = await this.Callback.find(
+			{ typeCallback: 'alarm' },
+			'callbackData answerText replyMarkup',
+		).exec();
+
+		const regionReduce = regions.reduce((acum, curent) => {
+			regionsUser.forEach(region => {
+				if (
+					region == curent.callbackData.replace(/\D/gi, '') &&
+					curent.callbackData.match(/turn_on/)
+				) {
+					acum.push([
+						JSON.parse(curent.replyMarkup[0]),
+						JSON.parse(curent.replyMarkup[1]),
+					]);
+				}
+				if (
+					region != curent.callbackData.replace(/\D/gi, '') &&
+					curent.callbackData.match(/turn_off/)
+				) {
+					acum.push([
+						JSON.parse(curent.replyMarkup[0]),
+						JSON.parse(curent.replyMarkup[1]),
+					]);
+				}
+			});
+
+			return acum;
+		}, []);
+
+		if (notifyUser) {
+			return JSON.stringify({
+				inline_keyboard: [
+					[
+						JSON.parse(
+							(
+								await this.Callback.findOne({
+									callbackData: 'turn_on_notify_alarm',
+								})
+							).replyMarkup,
+						),
+					],
+					...regionReduce,
+				],
+			});
+		}
+
+		if (!notifyUser) {
+			return JSON.stringify({
+				inline_keyboard: [
+					[
+						JSON.parse(
+							(
+								await this.Callback.findOne({
+									callbackData: 'turn_off_notify_alarm',
+								})
+							).replyMarkup,
+						),
+					],
+					...regionReduce,
+				],
+			});
+		}
 	}
 
 	async listenerComands(msg) {
@@ -43,7 +123,7 @@ class Commands {
 
 				/**FOR START */
 				if (msgText == '/start' && !findUser) {
-					const addNewUser = new this.User({
+					await this.addNewUser({
 						id,
 						is_bot,
 						first_name,
@@ -52,23 +132,21 @@ class Commands {
 						language_code,
 						is_premium,
 					});
-					await addNewUser.save();
 				} else if (msgText == '/start' && findUser) {
-					await this.User.findOneAndUpdate(
-						{ id: msgChatId },
-						{
-							id,
-							is_bot,
-							first_name,
-							last_name,
-							username,
-							language_code,
-							is_premium,
-						},
-						{
-							new: true,
-						},
-					);
+					await this.updateUser(msgChatId, {
+						id,
+						is_bot,
+						first_name,
+						last_name,
+						username,
+						language_code,
+						is_premium,
+					});
+				}
+
+				/**FOR SETTINGS ALARM */
+				if (msgText == '/settings_alarm') {
+					opts.reply_markup = await this.setReplyMarkup(findUser);
 				}
 
 				await this.bot.sendMessage(msgChatId, text, opts);

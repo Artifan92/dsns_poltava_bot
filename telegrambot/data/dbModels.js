@@ -7,7 +7,8 @@ const user = process.env.MONGO_CONFIG_USER,
 	pass = process.env.MONGO_CONFIG_PASS;
 
 async function connectToDb() {
-	const mongoDB = `mongodb+srv://${user}:${pass}@telegrambot.anjvydp.mongodb.net/?retryWrites=true&w=majority`;
+	// const mongoDB = `mongodb+srv://${user}:${pass}@telegrambot.anjvydp.mongodb.net/?retryWrites=true&w=majority`;
+	const mongoDB = `mongodb+srv://artem:Dart2021@telegrambot.anjvydp.mongodb.net/?retryWrites=true&w=majority`;
 	await mongoose.connect(mongoDB, { dbName: 'bot' });
 }
 
@@ -68,7 +69,7 @@ const UserSchema = new mongoose.Schema({
 			type: String,
 			default: null,
 		},
-		replyMarkup: String,
+		replyMarkup: Array,
 		typeCallback: String,
 	}),
 	RegionSchema = new mongoose.Schema({

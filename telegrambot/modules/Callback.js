@@ -32,17 +32,106 @@ class Callback {
 		);
 	}
 
-	async setMarkupToCommand(command, replyMarkup) {
-		await this.Command.findOneAndUpdate(
-			{ command: command },
-			{ 'opts.reply_markup': replyMarkup },
-			{
-				new: true,
-			},
-		);
+	async setReplyMarkup(chatId, user) {
+		const notifyUser = user.alarm_message;
+		const regionsUser = user.alarm_region_id;
+		const regions = await this.Callback.find(
+			{ typeCallback: 'alarm' },
+			'callbackData answerText replyMarkup',
+		).exec();
+
+		const regionReduce = regions.reduce((acum, curent) => {
+			regionsUser.forEach(region => {
+				if (
+					region == curent.callbackData.replace(/\D/gi, '') &&
+					curent.callbackData.match(/turn_on/)
+				) {
+					acum.push([
+						JSON.parse(curent.replyMarkup[0]),
+						JSON.parse(curent.replyMarkup[1]),
+					]);
+				}
+				if (
+					region != curent.callbackData.replace(/\D/gi, '') &&
+					curent.callbackData.match(/turn_off/)
+				) {
+					acum.push([
+						JSON.parse(curent.replyMarkup[0]),
+						JSON.parse(curent.replyMarkup[1]),
+					]);
+				}
+			});
+
+			return acum;
+		}, []);
+
+		if (notifyUser) {
+			await this.setAlarmMessageToUsers(chatId, false);
+			return JSON.stringify({
+				inline_keyboard: [
+					[
+						JSON.parse(
+							(
+								await this.Callback.findOne({
+									callbackData: 'turn_off_notify_alarm',
+								})
+							).replyMarkup,
+						),
+					],
+					...regionReduce,
+				],
+			});
+		}
+
+		if (!notifyUser) {
+			await this.setAlarmMessageToUsers(chatId, true);
+			return JSON.stringify({
+				inline_keyboard: [
+					[
+						JSON.parse(
+							(
+								await this.Callback.findOne({
+									callbackData: 'turn_on_notify_alarm',
+								})
+							).replyMarkup,
+						),
+					],
+					...regionReduce,
+				],
+			});
+		}
 	}
 
-	async eventCallback(callback, callbacksAll, alarmCallbacks) {
+	async changesUsersRegionToNotify(msgChatId, msgData, user) {
+		const regionsUser = user.alarm_region_id;
+		regionsUser.forEach(async (region, index) => {
+			if (region == msgData.replace(/\D/gi, '') && msgData.match(/turn_off/)) {
+				console.log(true);
+				await this.User.findOneAndUpdate(
+					{ id: msgChatId },
+					{ alarm_region_id: [...regionsUser, msgData.replace(/\D/gi, '')] },
+					{
+						new: true,
+					},
+				);
+			}
+
+			if (region != msgData.replace(/\D/gi, '') && msgData.match(/turn_on/)) {
+				console.log(false);
+				// await this.User.findOneAndUpdate(
+				// 	{ id: msgChatId },
+				// 	{
+				// 		alarm_region_id: regionsUser.push(msgData.replace(/\D/gi, '')),
+				// 	},
+				// 	{
+				// 		new: true,
+				// 	},
+				// );
+			}
+		});
+	}
+
+	async eventCallback(callback, callbacksAll) {
 		const msgData = callback.data;
 
 		let options = {
@@ -54,75 +143,72 @@ class Callback {
 
 		/** ITERATION CALLBACK */
 		callbacksAll.forEach(async item => {
-			const callbackData = item.callbackData,
-				typeCallback = item.typeCallback;
+			const callbackData = item.callbackData;
 
 			/** ANSWER CALLBACK. EDITMEASSAGE OR EDITREPLYMARKUP */
-			if (callbackData == msgData && !typeCallback) {
-				const text = item.text,
-					answerText = item.answerText;
+			if (callbackData == msgData) {
+				const findUser = await this.User.findOne({
+						id: options.chat_id,
+					}).exec(),
+					text = item.text,
+					answerText = item.answerText,
+					typeCallback = item.typeCallback,
+					replyMarkup = item.replyMarkup;
 
 				await this.bot.answerCallbackQuery(callback.id, {
 					text: answerText,
 					show_alert: false,
 				});
 
-				options = {
-					...options,
-					reply_markup: item.replyMarkup,
-				};
-
-				if (!options.reply_markup) {
-					delete options.reply_markup;
+				if (replyMarkup) {
+					options = {
+						...options,
+						reply_markup: JSON.stringify([[{ inline_keyboard: replyMarkup }]]),
+					};
 				}
 
-				if (text) {
-					await this.bot.editMessageText(text, options);
+				/** !TYPECALLBACK */
+				if (!typeCallback) {
+					if (text) {
+						await this.bot.editMessageText(text, options);
+					}
+					if (!text && options.reply_markup) {
+						await this.bot.editMessageReplyMarkup(
+							options.reply_markup,
+							options,
+						);
+					}
 				}
-				if (!text && options.reply_markup) {
+
+				/** TYPECALLBACK - ALARM */
+				if (callbackData == msgData && typeCallback === 'alarm') {
+					await this.changesUsersRegionToNotify(
+						options.chat_id,
+						msgData,
+						findUser,
+					);
+					// options.reply_markup = await this.setReplyMarkup(
+					// 	options.chat_id,
+					// 	findUser,
+					// );
+					// await this.bot.editMessageReplyMarkup(options.reply_markup, options);
+				}
+				if (callbackData == msgData && typeCallback === 'alarmNotify') {
+					options.reply_markup = await this.setReplyMarkup(
+						options.chat_id,
+						findUser,
+					);
 					await this.bot.editMessageReplyMarkup(options.reply_markup, options);
 				}
-			}
-
-			/** TYPECALLBACK - ALARM */
-			if (callbackData == msgData && typeCallback === 'alarm') {
-				const answerText = item.answerText;
-
-				await this.bot.answerCallbackQuery(callback.id, {
-					text: answerText,
-					show_alert: false,
-				});
-
-				options = {
-					...options,
-					reply_markup: item.replyMarkup,
-				};
-
-				if (!options.reply_markup) {
-					delete options.reply_markup;
-				}
-
-				let sendMessage;
-
-				if (msgData.match(/turn_off/)) {
-					sendMessage = false;
-				}
-				if (msgData.match(/turn_on/)) {
-					sendMessage = true;
-				}
-				this.setMarkupToCommand('/settings_alarm', options.reply_markup);
-				this.setAlarmMessageToUsers(options.chat_id, sendMessage);
-				await this.bot.editMessageReplyMarkup(options.reply_markup, options);
 			}
 		});
 	}
 
 	async render() {
 		const callbacksAll = await this.getAlarmTypes();
-		const alarmCallbacks = await this.getAlarmTypes('alarm');
 
 		this.bot.on('callback_query', callback => {
-			this.eventCallback(callback, callbacksAll, alarmCallbacks);
+			this.eventCallback(callback, callbacksAll);
 		});
 	}
 }
