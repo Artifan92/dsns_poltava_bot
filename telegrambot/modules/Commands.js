@@ -41,7 +41,7 @@ class Commands {
 			'callbackData answerText replyMarkup',
 		).exec();
 
-		const regionReduce = regions.reduce((acum, curent) => {
+		const regionTurnOnInUser = regions.reduce((acum, curent) => {
 			regionsUser.forEach(region => {
 				if (
 					region == curent.callbackData.replace(/\D/gi, '') &&
@@ -52,19 +52,12 @@ class Commands {
 						JSON.parse(curent.replyMarkup[1]),
 					]);
 				}
-				if (
-					region != curent.callbackData.replace(/\D/gi, '') &&
-					curent.callbackData.match(/turn_off/)
-				) {
-					acum.push([
-						JSON.parse(curent.replyMarkup[0]),
-						JSON.parse(curent.replyMarkup[1]),
-					]);
-				}
 			});
 
 			return acum;
 		}, []);
+
+		const regionTurnOffInUser = regions.filter(region => {});
 
 		if (notifyUser) {
 			return JSON.stringify({
@@ -78,7 +71,7 @@ class Commands {
 							).replyMarkup,
 						),
 					],
-					...regionReduce,
+					...regionTurnOnInUser,
 				],
 			});
 		}
@@ -95,7 +88,7 @@ class Commands {
 							).replyMarkup,
 						),
 					],
-					...regionReduce,
+					...regionTurnOnInUser,
 				],
 			});
 		}
