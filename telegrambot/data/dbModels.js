@@ -71,6 +71,7 @@ const UserSchema = new mongoose.Schema({
 		},
 		replyMarkup: Array,
 		typeCallback: String,
+		numberOfOrder: Number,
 	}),
 	RegionSchema = new mongoose.Schema({
 		regionId: {

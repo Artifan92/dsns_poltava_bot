@@ -38,26 +38,32 @@ class Commands {
 		const regionsUser = user.alarm_region_id;
 		const regions = await this.Callback.find(
 			{ typeCallback: 'alarm' },
-			'callbackData answerText replyMarkup',
+			'callbackData answerText replyMarkup numberOfOrder',
 		).exec();
 
-		const regionTurnOnInUser = regions.reduce((acum, curent) => {
-			regionsUser.forEach(region => {
-				if (
-					region == curent.callbackData.replace(/\D/gi, '') &&
-					curent.callbackData.match(/turn_on/)
-				) {
-					acum.push([
-						JSON.parse(curent.replyMarkup[0]),
-						JSON.parse(curent.replyMarkup[1]),
-					]);
-				}
-			});
+		const regionTurnOnInUser = regions.filter(region => {
+			if (region.callbackData.match(/turn_on/)) {
+				return regionsUser.includes(region.callbackData.replace(/\D/gi, ''));
+			}
+		});
 
-			return acum;
-		}, []);
+		const regionTurnOffInUser = regions.filter(region => {
+			if (region.callbackData.match(/turn_off/)) {
+				return !regionsUser.includes(region.callbackData.replace(/\D/gi, ''));
+			}
+		});
 
-		const regionTurnOffInUser = regions.filter(region => {});
+		const regionAll = regionTurnOnInUser
+			.concat(regionTurnOffInUser)
+			.sort((a, b) => a.numberOfOrder - b.numberOfOrder)
+			.reduce((acum, curent) => {
+				acum.push([
+					JSON.parse(curent.replyMarkup[0]),
+					JSON.parse(curent.replyMarkup[1]),
+				]);
+
+				return acum;
+			}, []);
 
 		if (notifyUser) {
 			return JSON.stringify({
@@ -71,7 +77,7 @@ class Commands {
 							).replyMarkup,
 						),
 					],
-					...regionTurnOnInUser,
+					...regionAll,
 				],
 			});
 		}
@@ -88,7 +94,7 @@ class Commands {
 							).replyMarkup,
 						),
 					],
-					...regionTurnOnInUser,
+					...regionAll,
 				],
 			});
 		}
