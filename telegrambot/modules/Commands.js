@@ -57,10 +57,7 @@ class Commands {
 			.concat(regionTurnOffInUser)
 			.sort((a, b) => a.numberOfOrder - b.numberOfOrder)
 			.reduce((acum, curent) => {
-				acum.push([
-					JSON.parse(curent.replyMarkup[0]),
-					JSON.parse(curent.replyMarkup[1]),
-				]);
+				acum.push([curent.replyMarkup[0], curent.replyMarkup[1]]);
 
 				return acum;
 			}, []);
@@ -68,15 +65,11 @@ class Commands {
 		if (notifyUser) {
 			return JSON.stringify({
 				inline_keyboard: [
-					[
-						JSON.parse(
-							(
-								await this.Callback.findOne({
-									callbackData: 'turn_on_notify_alarm',
-								})
-							).replyMarkup,
-						),
-					],
+					(
+						await this.Callback.findOne({
+							callbackData: 'turn_on_notify_alarm',
+						})
+					).replyMarkup,
 					...regionAll,
 				],
 			});
@@ -85,15 +78,11 @@ class Commands {
 		if (!notifyUser) {
 			return JSON.stringify({
 				inline_keyboard: [
-					[
-						JSON.parse(
-							(
-								await this.Callback.findOne({
-									callbackData: 'turn_off_notify_alarm',
-								})
-							).replyMarkup,
-						),
-					],
+					(
+						await this.Callback.findOne({
+							callbackData: 'turn_off_notify_alarm',
+						})
+					).replyMarkup,
 					...regionAll,
 				],
 			});
@@ -147,7 +136,6 @@ class Commands {
 				if (msgText == '/settings_alarm') {
 					opts.reply_markup = await this.setReplyMarkup(findUser);
 				}
-
 				await this.bot.sendMessage(msgChatId, text, opts);
 			}
 		});

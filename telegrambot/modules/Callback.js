@@ -92,15 +92,11 @@ class Callback {
 
 		return JSON.stringify({
 			inline_keyboard: [
-				[
-					JSON.parse(
-						(
-							await this.Callback.findOne({
-								callbackData: callbackData,
-							})
-						).replyMarkup,
-					),
-				],
+				(
+					await this.Callback.findOne({
+						callbackData: callbackData,
+					})
+				).replyMarkup,
 				...region,
 			],
 		});
@@ -126,10 +122,7 @@ class Callback {
 			})
 			.sort((a, b) => a.numberOfOrder - b.numberOfOrder)
 			.reduce((acum, curent) => {
-				acum.push([
-					JSON.parse(curent.replyMarkup[0]),
-					JSON.parse(curent.replyMarkup[1]),
-				]);
+				acum.push([curent.replyMarkup[0], curent.replyMarkup[1]]);
 
 				return acum;
 			}, []);
@@ -175,7 +168,7 @@ class Callback {
 				if (replyMarkup.length) {
 					options = {
 						...options,
-						reply_markup: JSON.stringify([[{ inline_keyboard: replyMarkup }]]),
+						reply_markup: JSON.stringify({ inline_keyboard: replyMarkup }),
 					};
 				}
 

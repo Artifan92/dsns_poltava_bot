@@ -101,8 +101,6 @@ class Alarm {
 				}
 			});
 		});
-
-		res.status(200).end();
 	}
 
 	async render() {
@@ -121,28 +119,11 @@ class Alarm {
 		const regions = await this.getRregions();
 
 		app.post('/alarm', (req, res) => {
+			console.log(req.body);
+			res.status(200).end();
 			this.alarmPost(req, res, regions, alarmTypes);
 		});
 	}
 }
 
 export default Alarm;
-
-// async function getRegion() {
-// 	const url = 'https://api.ukrainealarm.com/api/v3/alerts/status';
-// 	const res = await fetch(url, {
-// 		method: 'GET',
-// 		headers: {
-// 			'Content-Type': 'application/json',
-// 			authorization: process.env.ALARM_TOKEN,
-// 		},
-// 	});
-
-// 	if (!res.ok) {
-// 		throw new Error(`Could notfetch ${url}, status ${res.status}`);
-// 	}
-
-// 	return await res.json();
-// }
-
-// getRegion().then(data => console.log(data));
